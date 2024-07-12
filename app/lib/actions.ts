@@ -1,6 +1,6 @@
 'use server';
 
-import { signIn } from '@/auth';
+import { signIn } from '@/app/test/_auth';
 import { AuthError } from 'next-auth';
 
 // ...
