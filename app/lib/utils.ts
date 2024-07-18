@@ -1,7 +1,8 @@
 import { Revenue } from './definitions';
 
-export const formatCurrency = (amount: number) => {
-  return (amount / 100).toLocaleString('en-US', {
+export const formatCurrency = (amount: number | string) => {
+  const number = typeof amount === "number" ? amount : parseInt(amount) || 0;
+  return (number / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
   });
