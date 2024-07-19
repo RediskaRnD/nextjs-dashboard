@@ -26,7 +26,7 @@ export async function sql<T>(sql: string, single?: boolean): Promise<T[] | T> {
     const result = single
       ? queryResult.rows[0] as T
       : queryResult.rows as T[];
-    console.log("result", result);
+    console.log("result:", result);
     return result;
   } catch (err) {
     console.log(err);

@@ -111,11 +111,11 @@ export async function fetchFilteredInvoices(
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
-        customers.name ILIKE '${'%' + query + '%'}' OR
-        customers.email ILIKE '${'%' + query + '%'}' OR
-        invoices.amount::text ILIKE '${'%' + query + '%'}' OR
-        invoices.date::text ILIKE '${'%' + query + '%'}' OR
-        invoices.status ILIKE '${'%' + query + '%'}'
+        customers.name ILIKE '%${query}%' OR
+        customers.email ILIKE '%${query}%' OR
+        invoices.amount::text ILIKE '%${query}%' OR
+        invoices.date::text ILIKE '%${query}%' OR
+        invoices.status ILIKE '%${query}%'
       ORDER BY invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `);
@@ -131,11 +131,11 @@ export async function fetchInvoicesPages(query: string): Promise<number> {
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
     WHERE
-      customers.name ILIKE '${'%' + query + '%'}' OR
-      customers.email ILIKE '${'%' + query + '%'}' OR
-      invoices.amount::text ILIKE '${'%' + query + '%'}' OR
-      invoices.date::text ILIKE '${'%' + query + '%'}' OR
-      invoices.status ILIKE '${'%' + query + '%'}'
+      customers.name ILIKE '%${query}%' OR
+      customers.email ILIKE '%${query}%' OR
+      invoices.amount::text ILIKE '%${query}%' OR
+      invoices.date::text ILIKE '%${query}%' OR
+      invoices.status ILIKE '%${query}%'
   `, true);
     return Math.ceil((Number(totalItems.count) || 1) / ITEMS_PER_PAGE);
   } catch (error) {
@@ -144,23 +144,22 @@ export async function fetchInvoicesPages(query: string): Promise<number> {
   }
 }
 
-export async function fetchInvoiceById(id: string): Promise<InvoiceForm[]> {
+export async function fetchInvoiceById(id: string): Promise<InvoiceForm> {
   try {
-    const invoiceForms = await sql<InvoiceForm>(`
+    const invoiceForm = await sql<InvoiceForm>(`
       SELECT
         invoices.id,
         invoices.customer_id,
         invoices.amount,
         invoices.status
       FROM invoices
-      WHERE invoices.id = ${id};
-    `);
+      WHERE invoices.id = '${id}';
+    `, true);
 
-    return invoiceForms.map((invoice) => ({
-      ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
-    }));
+    return {
+      ...invoiceForm,
+      amount: invoiceForm.amount / 100
+    };
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
