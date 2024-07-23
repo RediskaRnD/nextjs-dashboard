@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-interface WalletConnectPayload {
+type WalletConnectPayload = {
   contractAddress: string;
   methodName: string;
   parameters: any[];

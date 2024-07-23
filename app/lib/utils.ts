@@ -1,11 +1,17 @@
 import { Revenue } from './definitions';
 
-export const formatCurrency = (amount: number | string) => {
-  const number = typeof amount === "number" ? amount : parseInt(amount) || 0;
-  return (number / 100).toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
+const FORMATTER22 = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
+export const formatCurrency = (amount: number | string) : string => {
+  const value : number = typeof amount === "number"
+    ? amount / 100
+    : parseInt(amount) / 100 || 0;
+  return FORMATTER22.format(value);
 };
 
 export const formatDateToLocal = (

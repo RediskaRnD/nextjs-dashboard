@@ -1,6 +1,6 @@
 import pg from "pg";
 
-const { Pool, Client } = pg;
+const { Pool } = pg;
 
 // pools will use environment variables
 // for connection information
@@ -8,7 +8,7 @@ export const pool = new Pool();
 
 // the pool will emit an error on behalf of any idle clients
 // it contains if a backend error or network partition happens
-pool.on('error', (err, client) => {
+pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
   process.exit(-1);
 });

@@ -4,7 +4,7 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --config .eslintrc.js ."
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
@@ -14,27 +14,25 @@
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
-    "eslint": "^9.7.0",
-    "eslint-config-next": "^14.2.5",
-    "eslint-plugin-react": "^7.34.4",
     "ethers": "^6.13.1",
     "next": "15.0.0-rc.0",
     "next-auth": "5.0.0-beta.19",
     "pg": "^8.12.0",
     "postcss": "^8.4.39",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-dom": "19.0.0-rc-fb9a90fa48-20240614",
-    "tailwindcss": "3.4.4",
-    "typescript": "5.5.2",
+    "react": "^19.0.0-rc-512b09b2-20240718",
+    "react-dom": "^19.0.0-rc-512b09b2-20240718",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.5.3",
     "use-debounce": "^10.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@types/node": "20.14.8",
+    "@types/node": "^20.14.11",
     "@types/pg": "^8.11.6",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.7.0"
   },
   "engines": {
     "node": ">=20.12.0"
