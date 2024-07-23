@@ -1,6 +1,6 @@
 'use server';
 
-import { sql } from "./database-service";
+import { sql, ssql } from "./database-service";
 import {
   CustomerField,
   CustomersTableType,
@@ -62,12 +62,12 @@ export async function fetchCardData() {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
     // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = sql<Count>(`SELECT COUNT(*) FROM invoices`, true);
-    const customerCountPromise = sql<Count>(`SELECT COUNT(*) FROM customers`, true);
-    const invoiceStatusPromise = sql<PaidPending>(`SELECT
+    const invoiceCountPromise = ssql<Count>(`SELECT COUNT(*) FROM invoices`);
+    const customerCountPromise = ssql<Count>(`SELECT COUNT(*) FROM customers`);
+    const invoiceStatusPromise = ssql<PaidPending>(`SELECT
          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`, true);
+         FROM invoices`);
 
     const data = await Promise.all([
       invoiceCountPromise,
@@ -129,7 +129,7 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string): Promise<number> {
   try {
-    const totalItems = await sql<Count>(`SELECT COUNT(*)
+    const totalItems = await ssql<Count>(`SELECT COUNT(*)
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
     WHERE
@@ -138,7 +138,7 @@ export async function fetchInvoicesPages(query: string): Promise<number> {
       invoices.amount::text ILIKE '%${query}%' OR
       invoices.date::text ILIKE '%${query}%' OR
       invoices.status ILIKE '%${query}%'
-  `, true);
+  `);
     return Math.ceil((Number(totalItems.count) || 1) / ITEMS_PER_PAGE);
   } catch (error) {
     console.error('Database Error:', error);
@@ -148,15 +148,15 @@ export async function fetchInvoicesPages(query: string): Promise<number> {
 
 export async function fetchInvoiceById(id: string): Promise<InvoiceForm | null> {
   try {
-    const invoiceForm = await sql<InvoiceForm>(`
+    const invoiceForm = await ssql<InvoiceForm>(`
       SELECT
         invoices.id,
         invoices.customer_id,
         invoices.amount,
         invoices.status
       FROM invoices
-      WHERE invoices.id = '${id}';
-    `, true);
+      WHERE invoices.id = $1;
+    `, [id]);
 
     return invoiceForm ? {
       ...invoiceForm,

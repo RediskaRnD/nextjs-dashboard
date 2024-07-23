@@ -13,19 +13,28 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-// Declare the overload signatures
-export async function sql<T>(sql: string): Promise<T[]>;
-export async function sql<T>(sql: string, single: boolean): Promise<T>;
-
-// Implement the function
-export async function sql<T>(sql: string, single?: boolean): Promise<T[] | T> {
+export async function sql<T>(sql: string, values: string[] = []): Promise<T[]> {
   const client = await pool.connect();
   try {
     console.log("query:", sql);
-    const queryResult = await client.query(sql);
-    const result = single
-      ? queryResult.rows[0] as T
-      : queryResult.rows as T[];
+    const queryResult = await client.query(sql, values);
+    const result = queryResult.rows as T[];
+    console.log("result:", result);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export async function ssql<T>(sql: string, values: string[] = []): Promise<T> {
+  const client = await pool.connect();
+  try {
+    console.log("query:", sql);
+    const queryResult = await client.query(sql, values);
+    const result = queryResult.rows[0] as T;
     console.log("result:", result);
     return result;
   } catch (err) {

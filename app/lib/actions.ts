@@ -1,6 +1,7 @@
 'use server';
 
 import { sql } from "@/app/lib/database-service";
+import { signIn } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from 'zod';
@@ -125,9 +126,10 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    // await signIn('credentials', formData);
+    await signIn('credentials', formData);
   } catch (error) {
     if (error instanceof AuthError) {
+      console.log("error: ", error);
       switch (error.type) {
         case 'CredentialsSignin':
           return 'Invalid credentials.';
