@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from "react";
+import React, { startTransition, useActionState } from "react";
 import Link from 'next/link';
 import {
   CheckIcon,
@@ -20,9 +20,19 @@ export default function EditInvoiceForm({ invoice, customers }: {
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState);
 
-  console.log("state", state);
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    startTransition(() => {
+      const formData = new FormData(
+        event.target as HTMLFormElement,
+        (event.nativeEvent as SubmitEvent).submitter,
+      );
+      formAction(formData);
+    });
+  };
+
   return (
-    <form action={formAction}>
+    <form onSubmit={onSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

@@ -27,8 +27,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
     });
   };
 
-  console.log("state", state);
-
   return (
     <form onSubmit={onSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
