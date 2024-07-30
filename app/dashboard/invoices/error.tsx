@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 
 export default function Error({ error, reset }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}): ReactElement {
   useEffect(() => {
     // Optionally log the error to an error reporting service
     console.error(error);

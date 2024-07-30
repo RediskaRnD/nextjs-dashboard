@@ -1,5 +1,7 @@
-import DashboardSkeleton from '@/app/ui/skeletons';
+import { ReactElement } from 'react';
 
-export default function Loading() {
-  return <DashboardSkeleton />;
-}
+import { DashboardSkeleton } from '@/app/ui/skeletons';
+
+const Loading = (): ReactElement => <DashboardSkeleton/>;
+
+export { Loading };

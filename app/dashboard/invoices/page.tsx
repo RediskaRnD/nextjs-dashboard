@@ -1,26 +1,29 @@
-import { Suspense } from 'react';
-import { Metadata } from "next";
-import { fetchInvoicesPages } from "@/app/lib/data";
-import Search from '@/app/ui/search';
-import Table from '@/app/ui/invoices/table';
-import Pagination from '@/app/ui/invoices/pagination';
-import { CreateInvoice } from '@/app/ui/invoices/buttons';
+import { PlusIcon } from '@heroicons/react/24/outline';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import React, { ReactElement, Suspense } from 'react';
+
+import { getTotalInvoicePages } from '@/app/lib/data';
 import { lusitana } from '@/app/ui/fonts';
+import { CreateInvoice } from '@/app/ui/invoices/buttons';
+import { Pagination } from '@/app/ui/invoices/pagination';
+import { InvoicesTable } from '@/app/ui/invoices/table';
+import { Search } from '@/app/ui/search';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 
 export const metadata: Metadata = {
   title: 'Invoices'
 };
 
-export default async function Page({ searchParams }: {
+const Page = async ({ searchParams }: {
   searchParams?: {
     query?: string;
     page?: string;
   };
-}) {
+}): Promise<ReactElement> => {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchInvoicesPages(query);
+  const totalPages = await getTotalInvoicePages(query);
 
   return (
     <div className="w-full">
@@ -32,11 +35,13 @@ export default async function Page({ searchParams }: {
         <CreateInvoice/>
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton/>}>
-        <Table query={query} currentPage={currentPage}/>
+        <InvoicesTable query={query} currentPage={currentPage}/>
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages}/>
       </div>
     </div>
   );
-}
+};
+
+export default Page;

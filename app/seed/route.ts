@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
-import { sql } from "../lib/database-service";
-import { customers, invoices, revenue, users } from '../lib/placeholder-data';
+
+import { sql } from '@/app/lib/database-service';
+import { customers, invoices, revenue, users } from '@/app/lib/placeholder-data';
 
 async function seedUsers() {
-  await sql(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+  await sql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
   await sql(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -21,12 +22,12 @@ async function seedUsers() {
         VALUES ('${user.id}', '${user.name}', '${user.email}', '${hashedPassword}')
         ON CONFLICT (id) DO NOTHING;
       `);
-    }),
+    })
   );
 }
 
 async function seedInvoices() {
-  await sql(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+  await sql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
   await sql(`
     CREATE TABLE IF NOT EXISTS invoices (
@@ -44,13 +45,13 @@ async function seedInvoices() {
         INSERT INTO invoices (customer_id, amount, status, date)
         VALUES ('${invoice.customer_id}', ${invoice.amount}, '${invoice.status}', '${invoice.date}')
         ON CONFLICT (id) DO NOTHING;
-      `),
-    ),
+      `)
+    )
   );
 }
 
 async function seedCustomers() {
-  await sql(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+  await sql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
   await sql(`
     CREATE TABLE IF NOT EXISTS customers (
@@ -67,8 +68,8 @@ async function seedCustomers() {
         INSERT INTO customers (id, name, email, image_url)
         VALUES ('${customer.id}', '${customer.name}', '${customer.email}', '${customer.image_url}')
         ON CONFLICT (id) DO NOTHING;
-      `),
-    ),
+      `)
+    )
   );
 }
 
@@ -86,23 +87,23 @@ async function seedRevenue() {
         INSERT INTO revenue (month, revenue)
         VALUES ('${rev.month}', ${rev.revenue})
         ON CONFLICT (month) DO NOTHING;
-      `),
-    ),
+      `)
+    )
   );
 }
 
-export async function GET() {
+export async function GET(): Promise<Response> {
   try {
-    await sql(`BEGIN`);
+    await sql('BEGIN');
     await seedUsers();
     await seedCustomers();
     await seedInvoices();
     await seedRevenue();
-    await sql(`COMMIT`);
+    await sql('COMMIT');
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
-    await sql(`ROLLBACK`);
+    await sql('ROLLBACK');
     return Response.json({ error }, { status: 500 });
   }
 }

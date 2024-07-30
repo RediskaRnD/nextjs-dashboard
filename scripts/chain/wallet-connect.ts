@@ -7,21 +7,28 @@ type WalletConnectPayload = {
   signature: string;
 }
 
+
 export function decodeWalletConnectPayload(payload: string): WalletConnectPayload {
   try {
     const decodedPayload = JSON.parse(payload);
-    console.log(decodedPayload);
+    console.log('Decoded Payload:', decodedPayload);
 
     const { contractAddress, methodName, parameters, signature } = decodedPayload;
-    console.log("contractAddress", contractAddress);
-    console.log("methodName", methodName);
-    console.log("parameters", parameters);
 
-    if (typeof contractAddress !== 'string' ||
-      typeof methodName !== 'string' ||
-      !Array.isArray(parameters) ||
-      typeof signature !== 'string') {
-      throw new Error("Invalid WalletConnect payload structure.");
+    if (typeof contractAddress !== 'string') {
+      throw new Error('Invalid type for contractAddress. Expected a string.');
+    }
+
+    if (typeof methodName !== 'string') {
+      throw new Error('Invalid type for methodName. Expected a string.');
+    }
+
+    if (!Array.isArray(parameters)) {
+      throw new Error('Invalid type for parameters. Expected an array.');
+    }
+
+    if (typeof signature !== 'string') {
+      throw new Error('Invalid type for signature. Expected a string.');
     }
 
     return {
@@ -31,7 +38,12 @@ export function decodeWalletConnectPayload(payload: string): WalletConnectPayloa
       signature
     };
   } catch (error) {
-    console.log(error);
-    // throw new Error("Invalid WalletConnect payload.");
+    if (error instanceof Error) {
+      console.error('Failed to decode WalletConnect payload:', error.message);
+      throw new Error('Invalid WalletConnect payload.');
+    } else {
+      console.error('Unknown error:', error);
+      throw new Error('An unknown error occurred while decoding the WalletConnect payload.');
+    }
   }
 }

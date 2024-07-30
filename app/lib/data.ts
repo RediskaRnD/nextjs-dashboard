@@ -1,13 +1,13 @@
 'use server';
 
-import { sql, ssql } from "./database-service";
+import { sql, ssql } from './database-service';
 import {
   CustomerField,
   CustomersTableType,
   InvoiceForm,
-  InvoicesTable,
+  InvoicesTable, LatestInvoice,
   LatestInvoiceRaw,
-  Revenue,
+  Revenue
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -20,12 +20,12 @@ type PaidPending = {
   pending: string
 }
 
-export async function fetchRevenue() {
+const fetchRevenue = async (): Promise<Revenue[]> => {
   try {
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const data = await sql<Revenue>(`SELECT * FROM revenue`);
+    const data = await sql<Revenue>('SELECT * FROM revenue');
 
     console.log('Data fetch completed after 3 seconds.');
 
@@ -34,9 +34,9 @@ export async function fetchRevenue() {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
   }
-}
+};
 
-export async function fetchLatestInvoices() {
+const fetchLatestInvoices = async (): Promise<LatestInvoice[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const data = await sql<LatestInvoiceRaw>(`
@@ -46,24 +46,24 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5`);
 
-    console.log("data", data);
+    console.log('data', data);
     return data.map((invoice) => ({
       ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
+      amount: formatCurrency(invoice.amount)
+    } as LatestInvoice));
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');
   }
-}
+};
 
-export async function fetchCardData() {
+const fetchCardData = async (): Promise<any | void> => {
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
     // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = ssql<Count>(`SELECT COUNT(*) FROM invoices`);
-    const customerCountPromise = ssql<Count>(`SELECT COUNT(*) FROM customers`);
+    const invoiceCountPromise = ssql<Count>('SELECT COUNT(*) FROM invoices');
+    const customerCountPromise = ssql<Count>('SELECT COUNT(*) FROM customers');
     const invoiceStatusPromise = ssql<PaidPending>(`SELECT
          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
@@ -72,7 +72,7 @@ export async function fetchCardData() {
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
-      invoiceStatusPromise,
+      invoiceStatusPromise
     ]);
 
     const numberOfInvoices = parseInt(data[0].count);
@@ -84,20 +84,20 @@ export async function fetchCardData() {
       numberOfCustomers,
       numberOfInvoices,
       totalPaidInvoices,
-      totalPendingInvoices,
+      totalPendingInvoices
     };
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
   }
-}
+};
 
 const ITEMS_PER_PAGE = 6;
 
-export async function fetchFilteredInvoices(
+const fetchFilteredInvoices = async (
   query: string,
-  currentPage: number,
-): Promise<InvoicesTable[]> {
+  currentPage: number
+): Promise<InvoicesTable[]> => {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -125,9 +125,9 @@ export async function fetchFilteredInvoices(
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoices.');
   }
-}
+};
 
-export async function fetchInvoicesPages(query: string): Promise<number> {
+const getTotalInvoicePages = async (query: string): Promise<number> => {
   try {
     const totalItems = await ssql<Count>(`SELECT COUNT(*)
     FROM invoices
@@ -144,9 +144,9 @@ export async function fetchInvoicesPages(query: string): Promise<number> {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
   }
-}
+};
 
-export async function fetchInvoiceById(id: string): Promise<InvoiceForm | null> {
+const fetchInvoiceById = async (id: string): Promise<InvoiceForm | null> => {
   try {
     const invoiceForm = await ssql<InvoiceForm>(`
       SELECT
@@ -166,9 +166,9 @@ export async function fetchInvoiceById(id: string): Promise<InvoiceForm | null> 
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
   }
-}
+};
 
-export async function fetchCustomers(): Promise<CustomerField[]> {
+const fetchCustomers = async (): Promise<CustomerField[]> => {
   try {
     return await sql<CustomerField>(`
       SELECT
@@ -181,9 +181,9 @@ export async function fetchCustomers(): Promise<CustomerField[]> {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all customers.');
   }
-}
+};
 
-export async function fetchFilteredCustomers(query: string) {
+const fetchFilteredCustomers = async (query: string): Promise<any> => {
   try {
     const customers = await sql<CustomersTableType>(`
 		SELECT
@@ -198,7 +198,7 @@ export async function fetchFilteredCustomers(query: string) {
 		LEFT JOIN invoices ON customers.id = invoices.customer_id
 		WHERE
 		  customers.name ILIKE '%${query}%' OR
-        customers.email ILIKE '%${query}%'}
+      customers.email ILIKE '%${query}%'}
 		GROUP BY customers.id, customers.name, customers.email, customers.image_url
 		ORDER BY customers.name ASC
 	  `);
@@ -206,10 +206,21 @@ export async function fetchFilteredCustomers(query: string) {
     return customers.map((customer) => ({
       ...customer,
       total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
+      total_paid: formatCurrency(customer.total_paid)
     }));
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
   }
-}
+};
+
+export {
+  fetchCardData,
+  fetchCustomers,
+  fetchFilteredCustomers,
+  fetchFilteredInvoices,
+  fetchInvoiceById,
+  fetchLatestInvoices,
+  fetchRevenue,
+  getTotalInvoicePages
+};

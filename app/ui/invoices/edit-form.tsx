@@ -1,21 +1,22 @@
 'use client';
 
-import React, { startTransition, useActionState } from "react";
-import Link from 'next/link';
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
-  UserCircleIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
-import { Button } from '@/app/ui/button';
-import { updateInvoice, State } from '@/app/lib/actions';
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import Link from 'next/link';
+import React, { ReactElement, startTransition, useActionState } from 'react';
 
-export default function EditInvoiceForm({ invoice, customers }: {
+import { State,updateInvoice } from '@/app/lib/actions';
+import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import { Button } from '@/app/ui/button';
+
+const EditInvoiceForm = ({ invoice, customers }: {
   invoice: InvoiceForm;
   customers: CustomerField[];
-}) {
+}): ReactElement => {
   const initialState: State = { message: null, errors: {} };
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState);
@@ -25,7 +26,7 @@ export default function EditInvoiceForm({ invoice, customers }: {
     startTransition(() => {
       const formData = new FormData(
         event.target as HTMLFormElement,
-        (event.nativeEvent as SubmitEvent).submitter,
+        (event.nativeEvent as SubmitEvent).submitter
       );
       formAction(formData);
     });
@@ -164,4 +165,6 @@ export default function EditInvoiceForm({ invoice, customers }: {
       </div>
     </form>
   );
-}
+};
+
+export { EditInvoiceForm };

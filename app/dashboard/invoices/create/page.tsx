@@ -1,13 +1,20 @@
-import { Metadata } from "next";
-import Form from '@/app/ui/invoices/create-form';
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import { Metadata } from 'next';
+import { ReactElement } from 'react';
+
 import { fetchCustomers } from '@/app/lib/data';
+import { Breadcrumbs } from '@/app/ui/invoices/breadcrumbs';
+import { CreateForm } from '@/app/ui/invoices/create-form';
 
 export const metadata: Metadata = {
   title: 'Create Invoice'
 };
 
-export default async function Page() {
+const Page = async ({ searchParams }: {
+  searchParams?: {
+    amount?: number;
+    status?: 'paid' | 'pending';
+  };
+}): Promise<ReactElement> => {
   const customers = await fetchCustomers();
 
   return (
@@ -18,11 +25,13 @@ export default async function Page() {
           {
             label: 'Create Invoice',
             href: '/dashboard/invoices/create',
-            active: true,
-          },
+            active: true
+          }
         ]}
       />
-      <Form customers={customers} />
+      <CreateForm customers={customers}/>
     </main>
   );
-}
+};
+
+export default Page;

@@ -7,8 +7,8 @@ const FORMATTER22 = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2
 });
 
-export const formatCurrency = (amount: number | string) : string => {
-  const value : number = typeof amount === "number"
+export const formatCurrency = (amount: number | string): string => {
+  const value: number = typeof amount === 'number'
     ? amount / 100
     : parseInt(amount) / 100 || 0;
   return FORMATTER22.format(value);
@@ -16,19 +16,19 @@ export const formatCurrency = (amount: number | string) : string => {
 
 export const formatDateToLocal = (
   dateStr: string,
-  locale: string = 'en-US',
-) => {
+  locale = 'en-US'
+): string => {
   const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
-    year: 'numeric',
+    year: 'numeric'
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
 };
 
-export const generateYAxis = (revenue: Revenue[]) => {
+export const generateYAxis = (revenue: Revenue[]): { yAxisLabels: string[], topLabel: number } => {
   // Calculate what labels we need to display on the y-axis
   // based on highest record and in 1000s
   const yAxisLabels = [];
@@ -42,7 +42,7 @@ export const generateYAxis = (revenue: Revenue[]) => {
   return { yAxisLabels, topLabel };
 };
 
-export const generatePagination = (currentPage: number, totalPages: number) => {
+export const generatePagination = (currentPage: number, totalPages: number): (number | '...')[] => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.
   if (totalPages <= 7) {
@@ -71,6 +71,6 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     currentPage,
     currentPage + 1,
     '...',
-    totalPages,
+    totalPages
   ];
 };

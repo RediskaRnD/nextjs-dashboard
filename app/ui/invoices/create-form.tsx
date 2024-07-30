@@ -1,18 +1,19 @@
 'use client';
 
-import Link from 'next/link';
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
-  UserCircleIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
-import React, { startTransition, useActionState } from 'react';
-import { Button } from '@/app/ui/button';
-import { createInvoice, State } from "@/app/lib/actions";
-import { CustomerField } from '@/app/lib/definitions';
+import Link from 'next/link';
+import React, { ReactElement, startTransition, useActionState } from 'react';
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+import { createInvoice, State } from '@/app/lib/actions';
+import { CustomerField } from '@/app/lib/definitions';
+import { Button } from '@/app/ui/button';
+
+const CreateForm = ({ customers }: { customers: CustomerField[] }): ReactElement => {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createInvoice, initialState);
 
@@ -21,7 +22,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
     startTransition(() => {
       const formData = new FormData(
         event.target as HTMLFormElement,
-        (event.nativeEvent as SubmitEvent).submitter,
+        (event.nativeEvent as SubmitEvent).submitter
       );
       formAction(formData);
     });
@@ -40,7 +41,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               id="customer"
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={""}
+              defaultValue={''}
               aria-describedby="customer-error"
             >
               <option value="" disabled>
@@ -79,7 +80,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 step="0.01"
                 placeholder="Enter USD amount"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                defaultValue={""}
+                defaultValue={''}
                 aria-describedby="amount-error"
               />
               <CurrencyDollarIcon
@@ -158,4 +159,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
       </div>
     </form>
   );
-}
+};
+
+export { CreateForm };

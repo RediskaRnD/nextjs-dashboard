@@ -1,4 +1,4 @@
-import pg from "pg";
+import pg from 'pg';
 
 const { Pool } = pg;
 
@@ -16,10 +16,10 @@ pool.on('error', (err) => {
 export async function sql<T>(sql: string, values: string[] = []): Promise<T[]> {
   const client = await pool.connect();
   try {
-    console.log("query:", sql);
+    console.log('query:', sql);
     const queryResult = await client.query(sql, values);
     const result = queryResult.rows as T[];
-    console.log("result:", result);
+    console.log('result:', result);
     return result;
   } catch (err) {
     console.log(err);
@@ -32,10 +32,10 @@ export async function sql<T>(sql: string, values: string[] = []): Promise<T[]> {
 export async function ssql<T>(sql: string, values: string[] = []): Promise<T> {
   const client = await pool.connect();
   try {
-    console.log("query:", sql);
+    console.log('query:', sql);
     const queryResult = await client.query(sql, values);
     const result = queryResult.rows[0] as T;
-    console.log("result:", result);
+    console.log('result:', result);
     return result;
   } catch (err) {
     console.log(err);

@@ -1,6 +1,8 @@
-import { fetchRevenue } from "@/app/lib/data";
-import { generateYAxis } from '@/app/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
+import { ReactElement } from 'react';
+
+import { fetchRevenue } from '@/app/lib/data';
+import { generateYAxis } from '@/app/lib/utils';
 import { lusitana } from '@/app/ui/fonts';
 
 // This component is representational only.
@@ -9,7 +11,7 @@ import { lusitana } from '@/app/ui/fonts';
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
 
-export default async function RevenueChart() {
+const RevenueChart = async (): Promise<ReactElement> => {
   const revenue = await fetchRevenue();
 
   const chartHeight = 350;
@@ -56,4 +58,6 @@ export default async function RevenueChart() {
       </div>
     </div>
   );
-}
+};
+
+export { RevenueChart };

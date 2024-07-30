@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { Metadata } from 'next';
+import { ReactElement } from 'react';
 
 export const metadata: Metadata = {
   title: 'Customers'
 };
 
-export default function Page() {
-  console.log("customers");
+const Page = (): ReactElement => {
+  console.log('customers');
   return <p>Customers Page</p>;
-}
+};
+
+export default Page;

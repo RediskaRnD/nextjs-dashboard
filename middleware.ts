@@ -1,9 +1,26 @@
-import NextAuth from 'next-auth';
-import { authConfig } from './auth.config';
+import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 
-export default NextAuth(authConfig).auth;
+import { decrypt } from '@/app/lib/session';
+import { auth } from '@/auth';
 
+export default auth((req) => {
+  console.log(req);
+  // req.auth
+});
+
+export async function middleware(request: NextRequest): Promise<void> {
+  const unprotectedRoutes = ['/login', '/signup'];
+  const currentPath = request.nextUrl.pathname;
+  const isProtected = !unprotectedRoutes.includes(currentPath);
+
+  if (isProtected) {
+    const cookie = cookies().get('session')?.value;
+    const session = await decrypt(cookie);
+  }
+}
+
+// Optionally, don't invoke Middleware on some paths
 export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };
